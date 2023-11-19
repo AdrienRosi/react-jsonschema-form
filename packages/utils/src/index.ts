@@ -40,6 +40,7 @@ import parseDateString from './parseDateString';
 import rangeSpec from './rangeSpec';
 import replaceStringParameters from './replaceStringParameters';
 import schemaRequiresTrueValue from './schemaRequiresTrueValue';
+import schemaRequiresConstValue from './schemaRequiresConstValue';
 import shouldRender from './shouldRender';
 import toConstant from './toConstant';
 import toDateString from './toDateString';
@@ -106,6 +107,7 @@ export {
   parseDateString,
   rangeSpec,
   replaceStringParameters,
+  schemaRequiresConstValue,
   schemaRequiresTrueValue,
   shouldRender,
   titleId,

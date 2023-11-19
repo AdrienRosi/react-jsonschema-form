@@ -5,6 +5,7 @@ import set from 'lodash/set';
 
 import { FormContextType, RJSFSchema, Widget, RegistryWidgetsType, StrictRJSFSchema } from './types';
 import getSchemaType from './getSchemaType';
+import isConstant from './isConstant';
 
 /** The map of schema types to widget type to widget name
  */
@@ -16,6 +17,7 @@ const widgetMap: { [k: string]: { [j: string]: string } } = {
     hidden: 'HiddenWidget',
   },
   string: {
+    checkbox: 'CheckboxWidget',
     text: 'TextWidget',
     password: 'PasswordWidget',
     email: 'EmailWidget',
@@ -126,6 +128,10 @@ export default function getWidget<T = any, S extends StrictRJSFSchema = RJSFSche
     if (widget in widgetMap[type]) {
       const registeredWidget = registeredWidgets[widgetMap[type][widget]];
       return getWidget<T, S, F>(schema, registeredWidget, registeredWidgets);
+    }
+
+    if (widget === 'CheckboxWidget' && !isConstant(schema)) {
+      throw new Error(`Wiget '${widget}' for type '${type}' needs const schema`);
     }
   }
 

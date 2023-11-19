@@ -8,6 +8,10 @@ const subschema: RJSFSchema = {
   default: true,
 };
 
+const stringSubschema: RJSFSchema = {
+  type: 'string',
+};
+
 const schema: RJSFSchema = {
   type: 'object',
   properties: {
@@ -22,6 +26,7 @@ const schema: RJSFSchema = {
           },
         },
         bool: subschema,
+        string: stringSubschema,
       },
     },
   },
@@ -98,6 +103,12 @@ describe('getWidget()', () => {
 
   it('should fail if schema has no type property', () => {
     expect(() => getWidget({}, 'blabla')).toThrowError(`No widget 'blabla' for type 'undefined'`);
+  });
+
+  it('should fail if simple string schema has no const', () => {
+    expect(() => getWidget(stringSubschema, 'CheckboxWidget')).toThrowError(
+      `Wiget 'CheckboxWidget' for type 'string' needs const schema`
+    );
   });
 
   it('should return widget if in registered widgets', () => {

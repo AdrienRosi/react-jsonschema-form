@@ -4,11 +4,14 @@ import {
   descriptionId,
   getTemplate,
   labelValue,
+  schemaRequiresConstValue,
   schemaRequiresTrueValue,
   FormContextType,
   RJSFSchema,
   StrictRJSFSchema,
   WidgetProps,
+  isConstant,
+  toConstant,
 } from '@rjsf/utils';
 
 /** The `CheckBoxWidget` is a widget for rendering boolean properties.
@@ -40,10 +43,21 @@ function CheckboxWidget<T = any, S extends StrictRJSFSchema = RJSFSchema, F exte
   // Because an unchecked checkbox will cause html5 validation to fail, only add
   // the "required" attribute if the field value must be "true", due to the
   // "const" or "enum" keywords
-  const required = schemaRequiresTrueValue<S>(schema);
+  const required = schemaRequiresTrueValue<S>(schema) || schemaRequiresConstValue<S>(schema);
+
+  // Checkbox is checked if :
+  // - `value` is equals to `true`
+  // - `schema` is a const one and `value` is equals to `const`
+  const checked = isConstant(schema) ? value === toConstant(schema) : typeof value === 'undefined' ? false : value;
 
   const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => onChange(event.target.checked),
+    (event: ChangeEvent<HTMLInputElement>) => {
+      if (event.target.value === 'on') {
+        onChange(event.target.checked);
+      } else {
+        onChange(event.target.checked ? event.target.value : '');
+      }
+    },
     [onChange]
   );
 
@@ -74,7 +88,8 @@ function CheckboxWidget<T = any, S extends StrictRJSFSchema = RJSFSchema, F exte
           type='checkbox'
           id={id}
           name={id}
-          checked={typeof value === 'undefined' ? false : value}
+          value={isConstant(schema) ? String(toConstant(schema)) : 'on'}
+          checked={checked}
           required={required}
           disabled={disabled || readonly}
           autoFocus={autofocus}
